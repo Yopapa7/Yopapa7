@@ -1,0 +1,115 @@
+-- Create ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "TeleportGui"
+screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+-- Create Frame
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 220, 0, 200)
+frame.Position = UDim2.new(0.5, -110, 0.5, -100)
+frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+frame.BorderSizePixel = 0
+frame.Parent = screenGui
+
+-- Create Draggable Bar
+local dragBar = Instance.new("Frame")
+dragBar.Size = UDim2.new(1, 0, 0, 30)
+dragBar.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+dragBar.BorderSizePixel = 0
+dragBar.Parent = frame
+
+local dragBarText = Instance.new("TextLabel")
+dragBarText.Size = UDim2.new(1, 0, 1, 0)
+dragBarText.Text = "Drag Here"
+dragBarText.TextColor3 = Color3.fromRGB(255, 255, 255)
+dragBarText.Font = Enum.Font.GothamBold
+dragBarText.TextSize = 14
+dragBarText.BackgroundTransparency = 1
+dragBarText.Parent = dragBar
+
+-- Mobile Dragging functionality
+local dragging = false
+local dragStart, startPos
+local UIS = game:GetService("UserInputService")
+
+dragBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = frame.Position
+    end
+end)
+
+dragBar.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch then
+        dragging = false
+    end
+end)
+
+UIS.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.Touch then
+        local delta = input.Position - dragStart
+        frame.Position = UDim2.new(
+            startPos.X.Scale,
+            startPos.X.Offset + delta.X,
+            startPos.Y.Scale,
+            startPos.Y.Offset + delta.Y
+        )
+    end
+end)
+
+-- Create a function for styling buttons
+local function createStyledButton(parent, text, position, callback)
+    local button = Instance.new("TextButton")
+    button.Size = UDim2.new(0, 200, 0, 40)
+    button.Position = position
+    button.Text = text
+    button.Font = Enum.Font.GothamBold
+    button.TextSize = 16
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    button.BorderSizePixel = 0
+    button.Parent = parent
+
+    -- Add rounded corners
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 10)
+    corner.Parent = button
+
+    -- Add gradient effect
+    local gradient = Instance.new("UIGradient")
+    gradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 100, 255)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(50, 50, 200))
+    }
+    gradient.Rotation = 45
+    gradient.Parent = button
+
+    -- Add hover effect (for desktop)
+    button.MouseEnter:Connect(function()
+        button.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+    end)
+
+    button.MouseLeave:Connect(function()
+        button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    end)
+
+    -- Button action
+    button.MouseButton1Click:Connect(callback)
+    return button
+end
+
+-- Create "Grab Ball" Button
+createStyledButton(frame, "Grab Ball", UDim2.new(0, 10, 0, 40), function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(38.44727325439453, 11.166534423828125, -48.344566345214844)
+end)
+
+-- Create "Auto Score" Button
+createStyledButton(frame, "Auto Score", UDim2.new(0, 10, 0, 90), function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-243.94134521484375, 11.166532516479492, -46.96743392944336)
+end)
+
+-- Create "Auto Score 2" Button
+createStyledButton(frame, "Auto Score 2", UDim2.new(0, 10, 0, 140), function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(320.45465087890625, 11.166534423828125, -44.71014404296875)
+end)
